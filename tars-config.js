@@ -39,7 +39,7 @@ var tarsConfig = {
      * Use linting and hinting of js-files
      * @type {Boolean}
      */
-    useJsLintAndHint: true,
+    useJsLintAndHint: false,
 
     /**
      * Path-strings to js-files, which have to be included before modules' js-files
@@ -70,7 +70,7 @@ var tarsConfig = {
      * Use babel for ES6(ES7-ESNext) syntax support
      * @type {Boolean}
      */
-    useBabel: false,
+    useBabel: true,
 
     /**
      * Write sourcemaps
@@ -227,13 +227,13 @@ var tarsConfig = {
      * Build version is a date ot building
      * @type {Boolean}
      */
-    useBuildVersioning: true,
+    useBuildVersioning: false,
 
     /**
      * Use archiver for your build
      * @type {Boolean}
      */
-    useArchiver: true,
+    useArchiver: false,
 
     /**
      * Set ulimit. Topical for Linux-family OS and OSX.
