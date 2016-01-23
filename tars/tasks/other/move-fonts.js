@@ -5,6 +5,7 @@ var cache = tars.packages.cache;
 var plumber = tars.packages.plumber;
 var notifier = tars.helpers.notifier;
 var browserSync = tars.packages.browserSync;
+var bowerFiles = tars.packages.bowerFiles();
 
 var staticFolderName = tars.config.fs.staticFolderName;
 
@@ -13,7 +14,11 @@ var staticFolderName = tars.config.fs.staticFolderName;
  */
 module.exports = function () {
     return gulp.task('other:move-fonts', function () {
-        return gulp.src('./markup/' + staticFolderName + '/fonts/**/*.*')
+        var files = ['./markup/' + staticFolderName + '/fonts/**/*.*'];
+        var dependencies = bowerFiles.ext(['eot','svg','ttf','woff','woff2']).files;
+        files = files.concat(dependencies);
+
+        return gulp.src(files)
             .pipe(plumber({
                 errorHandler: function (error) {
                     notifier.error('An error occurred while moving fonts.', error);
