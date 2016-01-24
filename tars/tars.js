@@ -135,7 +135,12 @@ tars.packages = {
     through2: tars.require('through2'),
     uglify: tars.require('gulp-uglify'),
     zip: tars.require('gulp-zip'),
-    bowerFiles: tars.require('bower-files')
+    bowerFiles: tars.require('bower-files'),
+    templateCache: tars.require('gulp-angular-templatecache'),
+    ngAnnotate: tars.require('gulp-ng-annotate'),
+    addStream: tars.require('add-stream'),
+    angularFilesort: tars.require('gulp-angular-filesort'),
+    addSrc: tars.require('gulp-add-src')
 }
 
 // Links to helpers

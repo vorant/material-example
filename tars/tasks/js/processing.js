@@ -12,6 +12,10 @@ var stripDebug = tars.packages.stripDebug;
 var sourcemaps = tars.packages.sourcemaps;
 var notifier = tars.helpers.notifier;
 var browserSync = tars.packages.browserSync;
+var ngAnnotate = tars.packages.ngAnnotate;
+var templateCache = tars.packages.templateCache;
+var angularFilesort = tars.packages.angularFilesort;
+var addStream = tars.packages.addStream;
 var bowerFiles = tars.packages.bowerFiles();
 
 var cwd = process.cwd();
@@ -23,12 +27,12 @@ var compressJs = tars.flags.release || tars.flags.min;
 var generateSourceMaps = tars.config.sourcemaps.js.active && !tars.flags.release;
 var sourceMapsDest = tars.config.sourcemaps.js.inline ? '' : '.';
 var jsPaths = [
-        bowerFiles.ext('js').files,
         '!./markup/modules/**/data/data.js',
         './markup/' + staticFolderName + '/js/framework/**/*.js',
         './markup/' + staticFolderName + '/js/libraries/**/*.js',
         './markup/' + staticFolderName + '/js/plugins/**/*.js',
         tars.config.jsPathsToConcatBeforeModulesJs,
+        './markup/modules/*.js',
         './markup/modules/*/*.js',
         tars.config.jsPathsToConcatAfterModulesJs,
         '!./markup/' + staticFolderName + '/js/separate-js/**/*.js'
@@ -49,15 +53,35 @@ jsPaths = [].concat.apply([], jsPaths);
  */
 function base () {
     return streamCombiner(
-        gulpif(tars.config.useBabel, babel({
-                babelrc: path.resolve(cwd + '/.babelrc')
-            })
-        ),
+        addStream.obj(addTemplates()),
+        addStream.obj(addProject()),
         concat({cwd: cwd, path: 'main.js'}),
         rename({ suffix: tars.options.build.hash }),
         gulpif(generateSourceMaps, sourcemaps.write(sourceMapsDest)),
         gulp.dest(destFolder)
     );
+}
+
+function addTemplates() {
+    return gulp.src('./markup/modules/*/*.tmpl.html')
+        .pipe(templateCache({
+            standalone: true
+            //root: 'markup/modules/'
+        }))
+}
+
+function getVendors() {
+    return gulp.src(bowerFiles.ext('js').files, { base: cwd })
+}
+
+function addProject() {
+    return gulp.src(jsPaths, { base: cwd })
+        .pipe(gulpif(tars.config.useBabel, babel({
+                babelrc: path.resolve(cwd + '/.babelrc')
+            })
+        ))
+        .pipe(angularFilesort())
+        .pipe(ngAnnotate());
 }
 
 /**
@@ -95,7 +119,7 @@ module.exports = function () {
      *  - reloading browser's page.
      */
     return gulp.task('js:processing', ['js:check'], function () {
-        return gulp.src(jsPaths, { base: cwd })
+        return getVendors()
             .pipe(plumber({
                 errorHandler: function (error) {
                     notifier.error('An error occurred while processing js-files.', error);

@@ -6,6 +6,7 @@ var handlebars = tars.packages.gulpHandlebars;
 var replace = tars.packages.replace;
 var plumber = tars.packages.plumber;
 var through2 = tars.packages.through2;
+var gulpif = tars.packages.gulpif;
 var fs = require('fs');
 var notifier = tars.helpers.notifier;
 var browserSync = tars.packages.browserSync;
@@ -108,6 +109,15 @@ module.exports = function () {
             error = er;
             modulesData = false;
         }
+        var handelbarsCompileFn = modulesData
+            ? handlebars(modulesData, handlebarsOptions)
+            : through2.obj(
+                function () {
+                    this.emit('error', new Error('An error occurred with data-files!\n' + error));
+                }
+            )
+        var handelbarsCompile = gulpif(false, handelbarsCompileFn)
+
 
         return gulp.src(['./markup/pages/**/*.html', '!./markup/pages/**/_*.html',
                          './markup/pages/**/*.hbs', '!./markup/pages/**/_*.hbs'])
@@ -117,15 +127,7 @@ module.exports = function () {
                         this.emit('end');
                     }
             }))
-            .pipe(
-                modulesData
-                    ? handlebars(modulesData, handlebarsOptions)
-                    : through2.obj(
-                        function () {
-                            this.emit('error', new Error('An error occurred with data-files!\n' + error));
-                        }
-                    )
-            )
+            .pipe(handelbarsCompile)
             .pipe(replace({
                 patterns: patterns,
                 usePrefix: false
