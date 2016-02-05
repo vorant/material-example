@@ -17,6 +17,7 @@ jsPathToWatch.push(
     'markup/' + staticFolderName + '/js/framework/**/*.js',
     'markup/' + staticFolderName + '/js/libraries/**/*.js',
     'markup/' + staticFolderName + '/js/plugins/**/*.js',
+    'markup/modules/*/*.tmpl.html',
     'markup/modules/**/*.js'
 );
 
