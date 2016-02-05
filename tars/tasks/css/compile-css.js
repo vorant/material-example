@@ -15,6 +15,7 @@ var importify = tars.packages.importify;
 var notifier = tars.helpers.notifier;
 var browserSync = tars.packages.browserSync;
 var bowerFiles = tars.packages.bowerFiles();
+var addStream = tars.packages.addStream;
 
 
 var postcssProcessors = tars.config.postcss;
@@ -49,7 +50,7 @@ var scssFilesToConcatinate = [
 var scssFilesToConcatinateForIe9;
 
 var dependencies = bowerFiles.ext('css').files;
-scssFilesToConcatinate = scssFilesToConcatinate.concat(dependencies);
+//scssFilesToConcatinate = scssFilesToConcatinate.concat(dependencies);
 
 if (tars.config.useSVG) {
     scssFilesToConcatinate.push(
@@ -139,6 +140,7 @@ module.exports = function () {
                 usePrefix: false
             }))
             .pipe(postcss(processors))
+            .pipe(addStream.obj(gulp.src(dependencies)))
             .pipe(concat('main' + tars.options.build.hash + '.css'))
             .pipe(gulpif(generateSourceMaps, sourcemaps.write(sourceMapsDest)))
             .pipe(gulp.dest('./dev/' + tars.config.fs.staticFolderName + '/css/'))
